@@ -17,6 +17,12 @@ export default function reducer(state, action) {
     return newState;
   }
 
+  if (action.type === "SET_BALANCE") {
+    let newState = { ...state, balance: Number(action.payload) };
+    console.log(newState);
+    return newState;
+  }
+
   if (action.type === "NEW_WISH") {
     console.log("Current state: ", state);
     let newState = {

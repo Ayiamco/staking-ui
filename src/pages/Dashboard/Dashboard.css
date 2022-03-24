@@ -181,8 +181,6 @@ form {
   /* flex-direction: column; */
   align-items: center;
   justify-content: space-evenly;
-  position: absolute;
-  bottom: 0;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.33);
 }
 
@@ -190,7 +188,7 @@ form > div {
   width: 70%;
 }
 .form-wish {
-  width: 100%;
+  width: 98%;
   padding: 15px;
   border-radius: 10px;
   margin: 20px 0;
@@ -223,16 +221,12 @@ label {
 }
 
 .sendButton {
-  height: 45px;
-  width: 45px;
   border: none;
-  background: #ffd4468a;
-  border-radius: 20px;
-  font-size: 23px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
 }
 
 .sendButton > img {
@@ -483,5 +477,10 @@ label {
     width: 70%;
     padding: 9px 12px;
     font-size: 15px;
+  }
+
+  .centerCon {
+    display: flex;
+    flex-direction: column !important;
   }
 }

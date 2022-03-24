@@ -1,38 +1,32 @@
 import "./Dashboard.css";
 import NavBar from "../../components/navBar/navBar.js";
 import CenterConRight from "../../components/centerConRight/centerConRight";
-import { useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import reducer from "../../reducers/wishDashboardReducer";
 import wishPortal from "../../utils/ayiamcoStakingToken.json";
 //import DP from "../../assets/profile.svg";
 import { ethers } from "ethers";
-import WishForm from "../../components/wishForm/wishForm";
+import TxnForm from "../../components/txnForm/txnForm";
 
 const contractAddress = "0xa4B4c91D1e018c6F92C8549753cED579c482f9D7";
 const contractABI = wishPortal.abi;
 const defaultState = {
-  allWishes: [],
-  message: "",
-  loading: false,
   chatMode: false,
   showLeft: false,
   showRight: true,
   modalDisplay: "none",
-  expand: {
-    address: "",
-    wish: "",
-    time: "",
-    state: false,
-  },
   username: {
     complete: "",
     firstSix: "",
     lastFour: "",
     initial: "",
   },
+  balance: 0,
+  stakedTokens: 0,
 };
-function WishDashboard({ setIsWalletConnected }) {
-  const [state, dispatch] = useReducer(reducer, defaultState);
+
+function Dashboard({ setIsWalletConnected }) {
+  const [_state, setState] = useState(defaultState);
 
   const getStakeContract = async (ethereum) => {
     const provider = new ethers.providers.Web3Provider(ethereum);
@@ -43,9 +37,9 @@ function WishDashboard({ setIsWalletConnected }) {
 
   const responsiveness = () => {
     if (window.innerWidth < 979) {
-      dispatch({ type: "CHANGE_LAYOUT", payload: true });
+      setState({ ..._state, columnLayout: true });
     } else if (window.innerWidth > 979) {
-      dispatch({ type: "CHANGE_LAYOUT", payload: false });
+      setState({ ..._state, columnLayout: false });
     }
   };
 
@@ -60,7 +54,12 @@ function WishDashboard({ setIsWalletConnected }) {
     //fetchUserName();
     let newUsername = JSON.parse(localStorage.getItem("userName"));
     if (!newUsername) setIsWalletConnected(false);
-    else dispatch({ type: "SET_USERNAME", payload: { ...newUsername } });
+    else {
+      console.log("Username before:", newUsername);
+      setState({ ..._state, username: newUsername });
+      console.log("state: ", { ..._state, username: newUsername });
+    }
+    responsiveness();
   }, []);
 
   return (
@@ -68,30 +67,25 @@ function WishDashboard({ setIsWalletConnected }) {
       <div className="homePageContainer">
         <div className="homePageInnerCon">
           <NavBar />
-          <div className="centerCon" style={{ flexDirection: state.columnLayout ? "column" : "row" }}>
+          <div className="centerCon" style={{ flexDirection: _state.columnLayout ? "column" : "row" }}>
             <div className="centerConLeft">
-              <div className="greeting">
-                <div className="description">
-                  <h1 className="walletAddress">
-                    Hi{" "}
-                    <span className="shortenedAddress">
-                      {state.username.firstSix}...
-                      {state.username.lastFour}
-                    </span>{" "}
-                    ,
-                  </h1>
-                  In many countries, it's believed that “if you make a wish as you toss a coin or a pebble into a well,
-                  it may come true." Let the blockchain be your well. 😊.
-                  <br></br>
-                  <br></br>
-                  <i>N/B: Private wishes would only be seen by you.</i>
-                  <br />
-                </div>
-              </div>
-              <WishForm getWishContract={getStakeContract}></WishForm>
+              <h1 className="walletAddress">
+                Hi{" "}
+                <span className="shortenedAddress">
+                  {_state.username.firstSix}...
+                  {_state.username.lastFour}
+                </span>{" "}
+                ,
+              </h1>
+              This is a token created for <a src="">Zuri Blockgames task.</a> 😊.
+              <br></br>
+              <br></br>
+              <i>N/B: There might be bugs.</i>
+              <br />
+              <TxnForm getContract={getStakeContract} setState={setState} state={_state}></TxnForm>
             </div>
 
-            <CenterConRight _state={state} getWishContract={getStakeContract} />
+            <CenterConRight setState={setState} getContract={getStakeContract} state={_state} />
           </div>
         </div>
       </div>
@@ -99,4 +93,4 @@ function WishDashboard({ setIsWalletConnected }) {
   );
 }
 
-export default WishDashboard;
+export default Dashboard;

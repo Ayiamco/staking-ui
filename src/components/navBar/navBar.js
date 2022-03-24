@@ -15,12 +15,8 @@ function NavBar({ setModalDisplay }) {
       <div className="navBarInnerCon">
         {/* <h3>Logo👊🏾</h3> */}
         <h3>
-          Make a Wish
-          <span
-            role="img"
-            aria-label="wave-emoji"
-            style={{ marginLeft: "5px" }}
-          >
+          Ayiamco Token
+          <span role="img" aria-label="wave-emoji" style={{ marginLeft: "5px" }}>
             🎂
           </span>
         </h3>
@@ -60,20 +56,12 @@ function NavBar({ setModalDisplay }) {
             </span>
             <ul className="menuList">
               <li>
-                <a
-                  href="https://github.com/Ayiamco/wishclient"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
+                <a href="https://github.com/Ayiamco/wishclient" rel="noopener noreferrer" target="_blank">
                   Github {<img src={github} alt="" />}
                 </a>
               </li>
               <li>
-                <a
-                  href="https://twitter.com/JosephAchonu"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
+                <a href="https://twitter.com/JosephAchonu" rel="noopener noreferrer" target="_blank">
                   Twitter {<img src={twitter} alt="" />}
                 </a>
               </li>
