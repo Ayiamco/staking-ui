@@ -2,32 +2,14 @@ import "./Dashboard.css";
 import NavBar from "../../components/navBar/navBar.js";
 import CenterConRight from "../../components/centerConRight/centerConRight";
 import React, { useState, useEffect } from "react";
-import reducer from "../../reducers/wishDashboardReducer";
-import wishPortal from "../../utils/ayiamcoStakingToken.json";
-//import DP from "../../assets/profile.svg";
+import ayiamcoStakingToken from "../../utils/ayiamcoStakingToken.json";
 import { ethers } from "ethers";
 import TxnForm from "../../components/txnForm/txnForm";
 
 const contractAddress = "0xa4B4c91D1e018c6F92C8549753cED579c482f9D7";
-const contractABI = wishPortal.abi;
-const defaultState = {
-  chatMode: false,
-  showLeft: false,
-  showRight: true,
-  modalDisplay: "none",
-  username: {
-    complete: "",
-    firstSix: "",
-    lastFour: "",
-    initial: "",
-  },
-  balance: 0,
-  stakedTokens: 0,
-};
+const contractABI = ayiamcoStakingToken.abi;
 
-function Dashboard({ setIsWalletConnected }) {
-  const [_state, setState] = useState(defaultState);
-
+function Dashboard({ setIsWalletConnected, _state, setState }) {
   const getStakeContract = async (ethereum) => {
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
@@ -51,14 +33,6 @@ function Dashboard({ setIsWalletConnected }) {
   });
 
   useEffect(() => {
-    //fetchUserName();
-    let newUsername = JSON.parse(localStorage.getItem("userName"));
-    if (!newUsername) setIsWalletConnected(false);
-    else {
-      console.log("Username before:", newUsername);
-      setState({ ..._state, username: newUsername });
-      console.log("state: ", { ..._state, username: newUsername });
-    }
     responsiveness();
   }, []);
 

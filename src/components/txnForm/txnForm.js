@@ -1,5 +1,4 @@
-import { useState, useReducer, useContext } from "react";
-import reducer from "../../reducers/centerConRightReducer";
+import { useState } from "react";
 import spinner from "../../assets/spinner.gif";
 import { ethers } from "ethers";
 import "./txnForm.css";
@@ -16,39 +15,47 @@ export default function TxnForm({ getContract, state, setState }) {
     e.preventDefault();
     let tokenPriceInEth;
     try {
-      if (tokenAmt) {
-        setIsBuyingToken(true);
-        const contract = await getContract(window.ethereum);
-        let tokenPriceInWei = await contract.getTokenEthPrice();
-        tokenPriceInEth = Number(tokenPriceInWei) / 10 ** 18;
-        let authenticatedUser = JSON.parse(localStorage.getItem("userName")).complete;
-        console.log("tokenPriceInEth:", tokenPriceInEth);
-        let txn = await contract.buyToken(authenticatedUser, {
-          value: ethers.utils.parseEther(`${tokenPriceInEth * tokenAmt}`),
-        });
-        await txn.wait();
-        setIsBuyingToken(false);
-      } else alert("Token amount cannot be empty");
+      if (Number(tokenAmt) <= 0) alert("Token amount must be greater than zero");
+
+      setIsBuyingToken(true);
+      const contract = await getContract(window.ethereum);
+      let tokenPriceInWei = await contract.getTokenEthPrice();
+      tokenPriceInEth = Number(tokenPriceInWei) / 10 ** 18;
+      let authenticatedUser = JSON.parse(localStorage.getItem("userName")).complete;
+      console.log("tokenPriceInEth:", tokenPriceInEth);
+      let txn = await contract.buyToken(authenticatedUser, {
+        value: ethers.utils.parseEther(`${tokenPriceInEth * tokenAmt}`),
+      });
+      await txn.wait();
     } catch (e) {
-      setIsBuyingToken(false);
       if (e.message.includes("insufficient funds for gas")) {
         alert(`You need at least ${tokenPriceInEth * tokenAmt} to buy ${tokenAmt} of Ayiamco token.`);
       }
+      if (e.message.includes("invalid decimal value")) {
+        alert("Staking amount must be a number.");
+      }
+
+      console.log(e);
     }
+    setIsBuyingToken(false);
   };
 
   const getUserBalance = async (e) => {
     e.preventDefault();
     try {
-      setIsGettingBalance(true);
-      const { ethereum } = window;
-      if (ethereum) {
-        let contract = await getContract(ethereum);
-        let balance = await contract.balanceOf(address);
-        let stakeBalance = await contract.stakeOf(address);
-        console.log("con state:", state);
-        setState({ ...state, balance: Number(balance), stakedTokens: Number(stakeBalance) });
+      if (!address) {
+        alert("Address cannot be empty.");
+        return;
       }
+      if (address.length !== 42 || !address.includes("0x")) {
+        alert("Wallet address is not valid");
+        return;
+      }
+      setIsGettingBalance(true);
+      let contract = await getContract(window.ethereum);
+      let balance = await contract.balanceOf(address);
+      let stakeBalance = await contract.stakeOf(address);
+      setState({ ...state, balance: Number(balance), stakedTokens: Number(stakeBalance) });
       setIsGettingBalance(false);
     } catch (e) {
       console.log(e);
@@ -58,18 +65,25 @@ export default function TxnForm({ getContract, state, setState }) {
   const stakeToken = async (e) => {
     e.preventDefault();
     try {
-      setIsStakingToken(true);
-      const { ethereum } = window;
-      if (ethereum) {
-        let contract = await getContract(ethereum);
-        await contract.createStake(stakingAmt);
-        let stakeBalance = await contract.stakeOf(address);
-        setState({ ...state, stakedTokens: Number(stakeBalance) });
+      if (Number(stakingAmt) <= 0) {
+        alert("Stake amount must be greater than zero.");
+        return;
       }
-      setIsStakingToken(false);
+
+      setIsStakingToken(true);
+      let contract = await getContract(window.ethereum);
+      await contract.createStake(stakingAmt);
+      getUserBalance(e);
     } catch (e) {
+      if (e.message.includes("invalid BigNumber")) {
+        alert("Staking amount must be a number.");
+      }
+      if (e.message.includes("burn amount exceeds balance")) {
+        alert("Error: Staking amount is greater than balance. ");
+      }
       console.log(e);
     }
+    setIsStakingToken(false);
   };
 
   return (
@@ -79,7 +93,7 @@ export default function TxnForm({ getContract, state, setState }) {
           <input
             className="form-wish"
             type="text"
-            placeholder="Enter Token Amount.."
+            placeholder="Enter token amount.."
             value={tokenAmt}
             onChange={(e) => {
               setTokenAmt(e.target.value);

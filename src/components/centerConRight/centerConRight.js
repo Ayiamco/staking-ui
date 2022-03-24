@@ -1,7 +1,4 @@
-import { useEffect, useReducer, useCallback } from "react";
-import reducer from "../../reducers/centerConRightReducer";
-import DP from "../../assets/profile.svg";
-import { useState } from "react/cjs/react.production.min";
+import { useEffect } from "react";
 
 export default function CenterConRight({ setState, getContract, state }) {
   const getUserBalance = async () => {
@@ -9,10 +6,8 @@ export default function CenterConRight({ setState, getContract, state }) {
     if (ethereum) {
       let contract = await getContract(ethereum);
       let authenticatedUser = JSON.parse(localStorage.getItem("userName")).complete;
-      console.log("auth user: ", authenticatedUser);
       let balance = await contract.balanceOf(authenticatedUser);
       let stakeBalance = await contract.stakeOf(authenticatedUser);
-      console.log("con state:", state);
       setState({ ...state, balance: Number(balance), stakedTokens: Number(stakeBalance) });
     }
   };
@@ -30,11 +25,19 @@ export default function CenterConRight({ setState, getContract, state }) {
     >
       <div className="messagesHeader">
         <h1 className="total"></h1>
-        <span>Information</span>
+        <span>User Information</span>
       </div>
-      <div style={{ margin: "1em 2em" }}>
-        <p>User Token balance: {state.balance}</p>
-        <p>User Staked Tokens: {state.stakedTokens}</p>
+      <div
+        style={{
+          margin: "1em 2em",
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <h5>User Token balance: {state.balance}</h5>
+        <h5>User Staked Tokens: {state.stakedTokens}</h5>
       </div>
     </div>
   );

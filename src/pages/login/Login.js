@@ -3,7 +3,7 @@ import "./login.css";
 import React, { useEffect, useState } from "react";
 //import ReactGA from "react-ga";
 
-function LoginPage({ setIsWalletConnected, isWalletConnected }) {
+function LoginPage({ setIsWalletConnected, setState }) {
   const [errorMessage, setErrorMessage] = useState({
     display: false,
     errorMessage: "",
@@ -18,6 +18,7 @@ function LoginPage({ setIsWalletConnected, isWalletConnected }) {
       initial: walletAddress.substring(0, 1),
     };
     localStorage.setItem("userName", JSON.stringify(userData));
+    setState((prev) => ({ ...prev, username: userData }));
   };
 
   const checkIfWalletIsConnected = async () => {
@@ -37,7 +38,6 @@ function LoginPage({ setIsWalletConnected, isWalletConnected }) {
       } else {
         setIsWalletConnected(false);
         console.log("No authorized account found");
-        //alert("No authorized account found");
       }
     } catch (error) {
       console.log(error);
@@ -63,6 +63,7 @@ function LoginPage({ setIsWalletConnected, isWalletConnected }) {
       });
       console.log("Connected account ", accounts[0]);
       saveWalletData(accounts[0].toString());
+      console.log("saved userdata: ", JSON.parse(localStorage.getItem("userName")));
       setIsWalletConnected(true);
     } catch (error) {
       console.log(error);

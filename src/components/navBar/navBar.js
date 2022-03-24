@@ -17,7 +17,7 @@ function NavBar({ setModalDisplay }) {
         <h3>
           Ayiamco Token
           <span role="img" aria-label="wave-emoji" style={{ marginLeft: "5px" }}>
-            🎂
+            🚀🚀
           </span>
         </h3>
         <div className="iconCon">
